@@ -295,8 +295,8 @@ class PPSD():
     .. _`ObsPy Tutorial`: http://docs.obspy.org/tutorial/
     """
     def __init__(self, stats, paz=None, parser=None, skip_on_gaps=False,
-                 is_rotational_data=False, db_bins=(-200, -50, 1.),
-                 ppsd_length=3600., overlap=0.5):
+                 db_bins=(-200, -50, 1.), ppsd_length=3600., overlap=0.5,
+                 special_handling=None, **kwargs):
         """
         Initialize the PPSD object setting all fixed information on the station
         that should not change afterwards to guarantee consistent spectral
@@ -312,7 +312,7 @@ class PPSD():
           aware that this leads to wrong results if the instrument's response
           is changing with data added to the PPSD. Use with caution!
 
-        :note: When using `is_rotational_data=True` the applied processing
+        :note: When using `special_handling="ringlaser"` the applied processing
                steps are changed. Differentiation of data (converting velocity
                to acceleration data) will be omitted and a flat instrument
                response is assumed, leaving away response removal and only
@@ -337,9 +337,6 @@ class PPSD():
                 `skip_on_gaps=True` for not filling gaps with zeros which might
                 result in some data segments shorter than `ppsd_length` not
                 used in the PPSD.
-        :type is_rotational_data: bool, optional
-        :param is_rotational_data: If set to True adapt processing of data to
-                rotational data. See note for details.
         :type db_bins: tuple of three ints/floats
         :param db_bins: Specify the lower and upper boundary and the width of
                 the db bins. The bin width might get adjusted to fit  a number
@@ -354,7 +351,19 @@ class PPSD():
                 values between 0 and 1 and is given as fraction of the length
                 of one segment, e.g. `ppsd_length=3600` and `overlap=0.5`
                 result in an overlap of 1800s of the segments.
+        :type special_handling: str, optional
+        :param special_handling: Switches on customized handling for
+            data other than seismometer recordings. Can be one of: 'ringlaser'
+            (no instrument correction, just division by "sensitivity" of
+            provided Poles and Zero), 'hydrophone' (no differentiation after
+            instrument correction).
         """
+        if kwargs.pop("is_rotational_data", None) is True:
+            msg = ("Keyword 'is_rotational_data' is deprecated and will be "
+                   "removed in the next major release. Please use "
+                   "'special_handling=\"ringlaser\"' instead.")
+            warnings.warn(msg, DeprecationWarning)
+            special_handling = "ringlaser"
         # check if matplotlib is available, no official dependency for
         # obspy.signal
         if MATPLOTLIB_VERSION is None:
@@ -372,7 +381,11 @@ class PPSD():
         self.channel = stats.channel
         self.sampling_rate = stats.sampling_rate
         self.delta = 1.0 / self.sampling_rate
-        self.is_rotational_data = is_rotational_data
+        self.special_handling = special_handling and special_handling.lower()
+        if self.special_handling not in (None, "ringlaser", "hydrophone"):
+            msg = "Unsupported value for 'special_handling' parameter: %s"
+            msg = msg % self.special_handling
+            raise ValueError(msg)
         self.ppsd_length = ppsd_length
         self.overlap = overlap
         # trace length for one segment
@@ -633,15 +646,18 @@ class PPSD():
         # mcnamara apply the correction at the end in freq-domain,
         # does it make a difference?
         # probably should be done earlier on bigger chunk of data?!
-        if self.is_rotational_data:
+        if self.special_handling == "ringlaser":
             # in case of rotational data just remove sensitivity
             tr.data /= paz['sensitivity']
+        # special_handling "hydrophone" does instrument correction same as
+        # "normal" data
         else:
             tr.simulate(paz_remove=paz, remove_sensitivity=True,
                         paz_simulate=None, simulate_sensitivity=False)
 
-        # go to acceleration, do nothing for rotational data:
-        if self.is_rotational_data:
+        # go to acceleration, do nothing when special_handling is either
+        # "ringlaser" or "hydrophone"
+        if self.special_handling in ("ringlaser", "hydrophone"):
             pass
         else:
             tr.data = np.gradient(tr.data, self.delta)
