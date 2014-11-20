@@ -828,10 +828,13 @@ class PPSD():
             with open(filename, 'rb') as file_:
                 ppsd = pickle.load(file_)
 
+        # some workarounds for older PPSD pickle files
         if hasattr(ppsd, "is_rotational_data"):
             if ppsd.is_rotational_data is True:
                 ppsd.special_handling = "ringlaser"
             delattr(ppsd, "is_rotational_data")
+        if not hasattr(ppsd, "special_handling"):
+            ppsd.special_handling = None
 
         return ppsd
 
