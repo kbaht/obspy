@@ -828,6 +828,11 @@ class PPSD():
             with open(filename, 'rb') as file_:
                 ppsd = pickle.load(file_)
 
+        if hasattr(ppsd, "is_rotational_data"):
+            if ppsd.is_rotational_data is True:
+                ppsd.special_handling = "ringlaser"
+            delattr(ppsd, "is_rotational_data")
+
         return ppsd
 
     def plot(self, filename=None, show_coverage=True, show_histogram=True,
