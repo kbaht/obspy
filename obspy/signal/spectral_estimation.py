@@ -596,19 +596,11 @@ class PPSD():
         # Yes, you should avoid removing the response until after you
         # have estimated the spectra to avoid elevated lp noise
 
-        
-
-        # go to acceleration, do nothing for rotational data:
-        if self.is_rotational_data:
-            pass
-        else:
-            tr.data = np.gradient(tr.data, self.delta)
-
         spec, _freq = mlab.psd(tr.data, self.nfft, self.sampling_rate,
-                               detrend=mlab.detrend_linear, window=fft_taper,
-                               noverlap=self.nlap, sides='onesided',
-                               scale_by_freq=True)
-
+                          detrend=mlab.detrend_linear, window=fft_taper,
+                          noverlap=self.nlap, sides='onesided',
+                          scale_by_freq=True)
+        
         # leave out first entry (offset)
         spec = spec[1:]
 
