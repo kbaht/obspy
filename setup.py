@@ -68,14 +68,14 @@ LOCAL_PATH = os.path.join(SETUP_DIRECTORY, "setup.py")
 DOCSTRING = __doc__.split("\n")
 
 # check for MSVC
-if platform.system() == "Windows" and (
-        'msvc' in sys.argv or
-        '-c' not in sys.argv and
-        get_default_compiler() == 'msvc'):
-    IS_MSVC = True
-else:
-    IS_MSVC = False
-
+# if platform.system() == "Windows" and (
+# 'msvc' in sys.argv or
+# '-c' not in sys.argv and
+# get_default_compiler() == 'msvc'):
+#     IS_MSVC = True
+# else:
+#     IS_MSVC = False
+IS_MSVC = False
 # Use system libraries? Set later...
 EXTERNAL_LIBS = False
 
@@ -95,7 +95,7 @@ KEYWORDS = [
     'seismograms', 'shapefile', 'signal', 'slink', 'spectrogram', 'StationXML',
     'taper', 'taup', 'travel time', 'trigger', 'VERCE', 'WAV', 'waveform',
     'WaveServer', 'WaveServerV', 'WebDC', 'web service', 'Winston', 'XML-SEED',
-    'XSEED']
+    'XSEED', 'XX', 'Baykal']
 
 INSTALL_REQUIRES = [
     'future>=0.12.4',
@@ -154,7 +154,8 @@ ENTRY_POINTS = {
         'SH_ASC = obspy.io.sh.core',
         'WAV = obspy.io.wav.core',
         'AH = obspy.io.ah.core',
-        ],
+        'XX = obspy.io.xx.core'
+    ],
     'obspy.plugin.waveform.TSPAIR': [
         'isFormat = obspy.io.ascii.core:_is_tspair',
         'readFormat = obspy.io.ascii.core:_read_tspair',
@@ -250,7 +251,11 @@ ENTRY_POINTS = {
     'obspy.plugin.waveform.AH': [
         'isFormat = obspy.io.ah.core:_is_ah',
         'readFormat = obspy.io.ah.core:_read_ah',
-        ],
+    ],
+    'obspy.plugin.waveform.XX': [
+        'isFormat = obspy.io.xx.core:_is_xx',
+        'readFormat = obspy.io.xx.core:_read_xx',
+    ],
     'obspy.plugin.event': [
         'QUAKEML = obspy.io.quakeml.core',
         'ZMAP = obspy.io.zmap.core',
