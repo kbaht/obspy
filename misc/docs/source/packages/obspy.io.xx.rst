@@ -7,8 +7,8 @@
     -------
     .. autosummary::
 :toctree: autogen
-           :nosignatures:
+        :nosignatures:
 
-                   core
+         core
 
-                .. comment to end block
+         .. comment to end block
