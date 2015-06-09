@@ -1,14 +1,13 @@
 .. currentmodule:: obspy.io.xx
 .. automodule:: obspy.io.xx
-
     .. comment to end block
 
     Modules
     -------
     .. autosummary::
-:toctree: autogen
-        :nosignatures:
+       :toctree: autogen
+       :nosignatures:
 
-         core
+       core
 
-         .. comment to end block
+    .. comment to end block
