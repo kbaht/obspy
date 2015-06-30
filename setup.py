@@ -95,7 +95,7 @@ KEYWORDS = [
     'seismograms', 'shapefile', 'signal', 'slink', 'spectrogram', 'StationXML',
     'taper', 'taup', 'travel time', 'trigger', 'VERCE', 'WAV', 'waveform',
     'WaveServer', 'WaveServerV', 'WebDC', 'web service', 'Winston', 'XML-SEED',
-    'XSEED', 'XX', 'Baykal']
+    'XSEED', 'XX', 'Baykal', 'SMART24', 'Symmetric Research', 'PAR4CH', 'SDAS']
 
 INSTALL_REQUIRES = [
     'future>=0.12.4',
@@ -154,7 +154,10 @@ ENTRY_POINTS = {
         'SH_ASC = obspy.io.sh.core',
         'WAV = obspy.io.wav.core',
         'AH = obspy.io.ah.core',
-        'XX = obspy.io.xx.core'
+        'XX = obspy.io.xx.core',
+        'SDAS = obspy.io.sdas.core',
+        'SMART24 = obspy.io.smart24.core',
+        'SYMRES = obspy.io.symres.core'
     ],
     'obspy.plugin.waveform.TSPAIR': [
         'isFormat = obspy.io.ascii.core:_is_tspair',
@@ -255,6 +258,18 @@ ENTRY_POINTS = {
     'obspy.plugin.waveform.XX': [
         'isFormat = obspy.io.xx.core:_is_xx',
         'readFormat = obspy.io.xx.core:_read_xx',
+    ],
+    'obspy.plugin.waveform.SDAS': [
+        'isFormat = obspy.io.sdas.core:_is_sdas',
+        'readFormat = obspy.io.sdas.core:_read_sdas',
+    ],
+    'obspy.plugin.waveform.SMART24': [
+        'isFormat = obspy.io.smart24.core:_is_smart24',
+        'readFormat = obspy.io.smart24.core:_read_smart24',
+    ],
+    'obspy.plugin.waveform.SYMRES': [
+        'isFormat = obspy.io.symres.core:_is_symres',
+        'readFormat = obspy.io.symres.core:_read_symres',
     ],
     'obspy.plugin.event': [
         'QUAKEML = obspy.io.quakeml.core',

@@ -26,3 +26,4 @@ class CoreTestCase(unittest.TestCase):
         """
         Testing XX file format.
         """
+        pass

@@ -35,8 +35,8 @@ DEFAULT_MODULES = ['core', 'db', 'geodetics', 'imaging',
                    'io.ah', 'io.ascii', 'io.cmtsolution', 'io.cnv', 'io.css',
                    'io.datamark', 'io.gse2', 'io.json', 'io.kinemetrics',
                    'io.mseed', 'io.ndk', 'io.nlloc', 'io.pdas', 'io.pde',
-                   'io.quakeml', 'io.sac', 'io.seg2', 'io.segy', 'io.seisan',
-                   'io.sh', 'io.shapefile', 'io.stationxml', 'io.wav',
+                   'io.quakeml', 'io.sac', 'io.sdas', 'io.seg2', 'io.segy', 'io.seisan',
+                   'io.sh', 'io.shapefile', 'io.smart24', 'io.stationxml', 'io.symres', 'io.wav',
                    'io.xseed', 'io.xx', 'io.y', 'io.zmap', 'realtime', 'signal', 'taup']
 NETWORK_MODULES = ['clients.arclink', 'clients.earthworm', 'clients.fdsn',
                    'clients.iris', 'clients.neic', 'clients.seedlink',
@@ -44,7 +44,7 @@ NETWORK_MODULES = ['clients.arclink', 'clients.earthworm', 'clients.fdsn',
 ALL_MODULES = DEFAULT_MODULES + NETWORK_MODULES
 
 # default order of automatic format detection
-WAVEFORM_PREFERRED_ORDER = ['MSEED', 'SAC', 'GSE2', 'SEISAN', 'SACXY', 'GSE1',
+WAVEFORM_PREFERRED_ORDER = ['MSEED', 'SDAS', 'XX', 'SMART24', 'SYMRES', 'SAC', 'GSE2', 'SEISAN', 'SACXY', 'GSE1',
                             'Q', 'SH_ASC', 'SLIST', 'TSPAIR', 'Y', 'PICKLE',
                             'SEGY', 'SU', 'SEG2', 'WAV', 'DATAMARK', 'CSS',
                             'AH', 'PDAS', 'KINEMETRICS_EVT']

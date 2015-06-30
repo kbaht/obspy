@@ -11,6 +11,7 @@ Baykal XX bindings to ObsPy core module.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from future.builtins import *  # NOQA
+from future.utils import native
 
 from struct import unpack
 import numpy as np
@@ -99,12 +100,11 @@ def _get_xx_version(filename):
     :rtype: str or False
     :return: version string of XX waveform data or ``False`` if unknown.
     """
+    header = GeneralHeader53()
     with open(filename, "rb") as fh:
-        fh.seek(0x04)
-        bytes = fh.read(2)
-    version = unpack('<H', bytes)[0]
-    if version == 53 or version == 60:
-        return version
+        fh.readinto(header)
+    if header.version == 53 or header.version == 60:
+        return header.version
     else:
         return False
 
@@ -118,7 +118,7 @@ def _read_xx(filename, **kwargs):
         ObsPy :func:`~obspy.core.stream.read` function, call this instead.
 
     :type filename: str
-    :param filename: XXS file to be read.
+    :param filename: XX file to be read.
     :rtype: :class:`~obspy.core.stream.Stream`
     :returns: Stream with Traces specified by given file.
     """
@@ -159,7 +159,7 @@ def _read_xx53(filename):
         data = data.reshape(nd, qty)
         data = np.hsplit(data, qty)
     for x in range(0, qty):
-        shape_data = data[x].reshape(nd)
+        shape_data = np.ascontiguousarray(data[x].reshape(nd))
         header['channel'] = headers[x].channel_name
         tr = Trace(shape_data, header=header)
         traces.append(tr)

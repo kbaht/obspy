@@ -43,9 +43,12 @@ The functionality is provided through the following packages:
    obspy.io.mseed
    obspy.io.pdas
    obspy.io.sac
+   obspy.io.sdas
    obspy.io.seisan
    obspy.io.seg2
    obspy.io.segy
+   obspy.io.symres
+   obspy.io.smart24
    obspy.io.sh
    obspy.io.wav
    obspy.io.xx
