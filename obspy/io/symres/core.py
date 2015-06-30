@@ -62,13 +62,13 @@ def _read_symres(filename, **kwargs):
     with open(filename, 'rb') as f:
         counts = f.read(-1)
         counts = from_buffer(counts, dtype=np.dtype('<i4'))
-
-    print(counts)
     nd = np.int32(len(counts) / qty)
     counts = counts.reshape(nd, qty)
     counts = np.hsplit(counts, qty)
     for x in range(0, qty):
         shape_data = np.ascontiguousarray(counts[x].reshape(nd))
+        if data["Ch" + str(x) + "ID"] == 'Time':
+            continue
         header['channel'] = data["Ch" + str(x) + "ID"]
         tr = Trace(shape_data, header=header)
         traces.append(tr)

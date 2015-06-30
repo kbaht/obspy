@@ -1,5 +1,5 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+# -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function)
 from future.builtins import *  # NOQA
 import numpy as np
 import ctypes
@@ -69,16 +69,16 @@ class Channel(object):
     freq = property(get_freq, set_freq)
     index = property(get_index, set_index)
 
-def isSDAS(filename):
+def _is_sdas(filename):
     try:
-        with open('D:/P0850054.TND', 'rb') as f:
+        with open(filename, 'rb') as f:
             cfg = ConfigParser()
             cfg.readfp(BytesIO(f.read(98)))
             return cfg.has_option('HEADER', 'OFFSET_TO_DATA')
     except:
         return False
 
-def readSDAS(filename, **kwargs):
+def _read_sdas(filename, **kwargs):
     groups = []
     channel_list = []
     traces = []

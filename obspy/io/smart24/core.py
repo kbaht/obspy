@@ -8,8 +8,7 @@ GeoInstr Smart24 continuous file bindings to ObsPy core module.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import (absolute_import, division, print_function)
 from future.builtins import *  # NOQA @UnusedWildImport
 
 from struct import unpack
@@ -89,7 +88,7 @@ def _is_smart24(filename):
     return False
 
 
-def _read_smart24(filename):
+def _read_smart24(filename, **kwargs):
     """
     Reads an Smart24 waveform file and returns a Stream object.
 
@@ -138,7 +137,8 @@ def _read_smart24(filename):
             tr.stats.station = ch_subframe.description.site_name
             tr.stats.location = ch_subframe.description.lc
             tr.stats.starttime = starttime
-            tr.stats.calib = ch_subframe.description.calib
+            if ch_subframe.description.calib != 0.0:
+                tr.stats.calib = ch_subframe.description.calib
 
             tr.stats.smart24 = {'latitude': ch_subframe.status_data.latitude,
                                 'longitude': ch_subframe.status_data.longitude,
