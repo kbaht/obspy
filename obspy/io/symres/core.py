@@ -55,29 +55,21 @@ def _read_symres(filename, **kwargs):
                             int(file[10:12]), int(file[12:14]))
     header = {}
     header['sampling_rate'] = float(data["SampleRate"])
-    header['station'] = data["A-DInfo"].strip()
+    header['station'] = data["A-DInfo"]
     header['starttime'] = starttime
     qty = int(data["Channels"])
     traces = []
     with open(filename, 'rb') as f:
         counts = f.read(-1)
         counts = from_buffer(counts, dtype=np.dtype('<i4'))
+
+    print(counts)
     nd = np.int32(len(counts) / qty)
     counts = counts.reshape(nd, qty)
     counts = np.hsplit(counts, qty)
     for x in range(0, qty):
         shape_data = np.ascontiguousarray(counts[x].reshape(nd))
-        header['channel'] = data["Ch" + str(x) + "ID"].strip()
+        header['channel'] = data["Ch" + str(x) + "ID"]
         tr = Trace(shape_data, header=header)
         traces.append(tr)
-    if traces[0].stats.channel == 'TIME':
-        sec_hi = traces[0].data[0]
-        sec_low = traces[0].data[1]
-        msec = traces[0].data[2]
-        corr = traces[0].data[3]
-        sync = (sec_hi << 16) + sec_low + msec / 1000.0
-        if corr > 350:
-            sync -= 1
-        for t in traces:
-            t.stats.starttime = UTCDateTime(sync)
     return Stream(traces)
