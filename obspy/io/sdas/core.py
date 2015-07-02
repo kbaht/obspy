@@ -4,6 +4,7 @@ from future.builtins import *  # NOQA
 import numpy as np
 import ctypes
 from obspy import Trace, Stream, UTCDateTime
+from obspy.core.util.attribdict import AttribDict
 from obspy.core.compatibility import from_buffer
 from ConfigParser import ConfigParser
 from io import BytesIO
@@ -91,6 +92,8 @@ def _read_sdas(filename, **kwargs):
         cfg.readfp(BytesIO(f.read(header_size - 98)))
         header = {}
         header['station'] = cfg.get('SYSTEM', 'NAME')
+        sdas = AttribDict({'latitude': cfg.getfloat('SYSTEM', 'LAT'), 'longitude': cfg.getfloat('SYSTEM', 'LON'),
+                           'altitude': cfg.getfloat('SYSTEM', 'ALT')})
         group_count = cfg.getint('SYSTEM', 'N_GROUP')
         stream = cfg.get('FILE', 'STREAM')
         fragment_duration = cfg.getint('STREAM' + stream, 'REC_SIZE_SEC')
@@ -126,12 +129,13 @@ def _read_sdas(filename, **kwargs):
                 data = f.read(fragment_size)
                 dt = np.dtype(np.uint16)
                 dt = dt.newbyteorder('<')
-                data = np.ascontiguousarray(from_buffer(data, dtype=dt))
+                data = from_buffer(data, dtype=dt)
                 channel_data = np.hstack((channel_data, data))
                 f.seek(block_size - fragment_size * channel.index, os.SEEK_CUR)
             header['sampling_rate'] = channel.freq
             header['channel'] = channel.name
-            tr = Trace(channel_data, header=header)
+            tr = Trace(np.ascontiguousarray(channel_data), header=header)
+            tr.stats.sdas = sdas
             traces.append(tr)
     return Stream(traces)
 

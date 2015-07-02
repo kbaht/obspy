@@ -86,25 +86,11 @@ def _is_xx(filename):
     :rtype: bool
     :return: ``True`` if a XX waveform file.
     """
-    if _get_xx_version(filename):
-        return True
-    return False
-
-
-def _get_xx_version(filename):
-    """
-    Returns version of Baykal XX  waveform data.
-
-    :type filename: str
-    :param filename: XX v53 or v60 file to be checked.
-    :rtype: str or False
-    :return: version string of XX waveform data or ``False`` if unknown.
-    """
     header = GeneralHeader53()
     with open(filename, "rb") as fh:
         fh.readinto(header)
-    if header.version == 53 or header.version == 60:
-        return header.version
+    if 0 < header.version <= 60:
+        return True
     else:
         return False
 
@@ -122,11 +108,7 @@ def _read_xx(filename, **kwargs):
     :rtype: :class:`~obspy.core.stream.Stream`
     :returns: Stream with Traces specified by given file.
     """
-    version = _get_xx_version(filename)
-    if version == 53:
-        return _read_xx53(filename)
-    elif version == 60:
-        return None
+    return _read_xx53(filename)
 
 
 def _read_xx53(filename):
@@ -143,10 +125,15 @@ def _read_xx53(filename):
     traces = []
     with open(filename, 'rb') as f:
         f.readinto(general)
-        starttime = UTCDateTime(general.year, general.month, general.day)
+        year = general.year
+        if general.year < 1900:
+            year = general.year + 2000
+        starttime = UTCDateTime(year, general.month, general.day)
         header = {}
         header['sampling_rate'] = 1 / general.sample_period
-        header['station'] = general.station_name
+        if general.station_name[:3] == 'Нет':
+            general.station_name = 'XXX'
+        header['station'] = general.station_name[:3]
         header['starttime'] = starttime + general.time_begin
         qty = general.number_of_channel
         for x in range(0, qty):
@@ -162,6 +149,6 @@ def _read_xx53(filename):
         shape_data = np.ascontiguousarray(data[x].reshape(nd))
         header['channel'] = headers[x].channel_name
         tr = Trace(shape_data, header=header)
+        tr.stats.xx = {'version': general.version, 'latitude': general.latitude, 'longitude': general.longitude}
         traces.append(tr)
     return Stream(traces)
-
