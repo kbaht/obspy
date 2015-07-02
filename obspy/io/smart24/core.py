@@ -148,5 +148,5 @@ def _read_smart24(filename, **kwargs):
             traces.append(tr)
             if len(traces) % frame_header.channels_number == 0:
                 starttime += 60
-    st =  Stream(traces)
+    st = Stream(traces)
     return st.merge()

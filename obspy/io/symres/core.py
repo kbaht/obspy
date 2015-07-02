@@ -62,8 +62,6 @@ def _read_symres(filename, **kwargs):
     with open(filename, 'rb') as f:
         counts = f.read(-1)
         counts = from_buffer(counts, dtype=np.dtype('<i4'))
-
-    print(counts)
     nd = np.int32(len(counts) / qty)
     counts = counts.reshape(nd, qty)
     counts = np.hsplit(counts, qty)
