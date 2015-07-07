@@ -50,13 +50,12 @@ def _read_symres(filename, **kwargs):
     for line in lines:
         line = line.split(":")
         data[line[0]] = line[1]
-    file = filename[-18:]
-    starttime = UTCDateTime(int(file[0:4]), int(file[4:6]), int(file[6:8]), int(file[8:10]),
-                            int(file[10:12]), int(file[12:14]))
+    # file = filename[-18:]
+    # starttime = UTCDateTime(int(file[0:4]), int(file[4:6]), int(file[6:8]), int(file[8:10]),
+    #                         int(file[10:12]), int(file[12:14]))
     header = {}
     header['sampling_rate'] = float(data["SampleRate"])
-    header['station'] = data["A-DInfo"]
-    header['starttime'] = starttime
+    header['station'] = data["A-DInfo"].strip()
     qty = int(data["Channels"])
     traces = []
     with open(filename, 'rb') as f:
@@ -65,9 +64,15 @@ def _read_symres(filename, **kwargs):
     nd = np.int32(len(counts) / qty)
     counts = counts.reshape(nd, qty)
     counts = np.hsplit(counts, qty)
-    for x in range(0, qty):
+    time = counts[0].reshape(nd)[:4]
+    second = (time[0] << 16) + time[1] + time[2] / 1000.0
+    if time[3] > 360:
+        second -= 1
+    starttime = UTCDateTime(second)
+    header['starttime'] = starttime
+    for x in range(1, qty):
         shape_data = np.ascontiguousarray(counts[x].reshape(nd))
-        header['channel'] = data["Ch" + str(x) + "ID"]
+        header['channel'] = data["Ch" + str(x) + "ID"].strip()
         tr = Trace(shape_data, header=header)
         traces.append(tr)
     return Stream(traces)
